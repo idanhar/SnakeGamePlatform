@@ -61,9 +61,18 @@ namespace SnakeGamePlatform
             Position foodPosition = food.GetPosition();
             if (food.direction == GameObject.Direction.RIGHT)
                 foodPosition.Y = foodPosition.Y + 5;
-            else
+            else if(food.direction == GameObject.Direction.LEFT)
                 foodPosition.Y = foodPosition.Y - 5;
+            else if (food.direction == GameObject.Direction.UP)
+            {
+                foodPosition.X = foodPosition.X - 5;
+            }
+            else
+            {
+                foodPosition.X = foodPosition.X + 5;
+            }
             food.SetPosition(foodPosition);
+           
         }
 
         //This function is called by the game when the user press a key down on the keyboard.
@@ -76,6 +85,10 @@ namespace SnakeGamePlatform
                 food.direction = GameObject.Direction.LEFT;
             if (key == (char)ConsoleKey.RightArrow)
                 food.direction = GameObject.Direction.RIGHT;
+            if (key == (char)ConsoleKey.DownArrow)
+                food.direction = GameObject.Direction.DOWN;
+            if (key == (char)ConsoleKey.UpArrow)
+                food.direction = GameObject.Direction.UP;
         }
     }
 }
