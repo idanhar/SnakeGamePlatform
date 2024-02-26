@@ -32,7 +32,7 @@ namespace SnakeGamePlatform
 
             //Adding a text label to the game board.
             Position labelPosition = new Position(100, 20);
-            lblScore = new TextLabel("This is just an example! Use right and left arrows to change direction", labelPosition);
+            lblScore = new TextLabel("Kuku", labelPosition);
             lblScore.SetFont("Ariel", 14);
             board.AddLabel(lblScore);
 
