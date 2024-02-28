@@ -16,6 +16,7 @@ namespace SnakeGamePlatform
         //GameObject [] snake;
         TextLabel lblScore;
         GameObject food;
+        GameObject[] arr;
 
         //This function is called by the game one time on initialization!
         //Here you should define game board resolution and size (x,y).
@@ -24,6 +25,8 @@ namespace SnakeGamePlatform
         //use board Object to add game objects to the game board, play background music, set interval, etc...
         public void GameInit(Board board)
         {
+            arr = new GameObject[2];
+            arr[0] = new GameObject
 
             //Setup board size and resolution!
             Board.resolutionFactor = 1;
@@ -58,6 +61,9 @@ namespace SnakeGamePlatform
         //Use this function to move game objects and check collisions
         public void GameClock(Board board)
         {
+            
+            
+
             Position foodPosition = food.GetPosition();
             if (food.direction == GameObject.Direction.RIGHT)
                 foodPosition.Y = foodPosition.Y + 5;
