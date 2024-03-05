@@ -16,8 +16,9 @@ namespace SnakeGamePlatform
         //GameObject [] snake;
         TextLabel lblScore;
         GameObject food;
-        GameObject[] arr;
-
+        GameObject[] snake;
+        Random appleRND = new Random();
+        int snakeVelocity;
         //This function is called by the game one time on initialization!
         //Here you should define game board resolution and size (x,y).
         //Here you should initialize all variables defined above and create all visual objects on screen.
@@ -25,8 +26,8 @@ namespace SnakeGamePlatform
         //use board Object to add game objects to the game board, play background music, set interval, etc...
         public void GameInit(Board board)
         {
-            arr = new GameObject[2];
-            arr[0] = new GameObject
+            snake = new GameObject[1];
+            snakeVelocity = 50;
 
             //Setup board size and resolution!
             Board.resolutionFactor = 1;
@@ -46,6 +47,12 @@ namespace SnakeGamePlatform
             food.direction = GameObject.Direction.RIGHT;
             board.AddGameObject(food);
 
+            Position snakePosition = new Position(400, 300);
+            snake[0] = new GameObject(snakePosition, 20, 20);
+            snake[0].SetBackgroundColor(Color.Green);
+            snake[0].direction = GameObject.Direction.LEFT;
+            board.AddGameObject(snake[0]);
+
             //Play file in loop!
             board.PlayBackgroundMusic(@"\Images\gameSound.wav");
             //Play file once!
@@ -53,7 +60,7 @@ namespace SnakeGamePlatform
 
 
             //Start game timer!
-            board.StartTimer(50);
+            board.StartTimer(snakeVelocity);
         }
         
         
@@ -64,20 +71,45 @@ namespace SnakeGamePlatform
             
             
 
-            Position foodPosition = food.GetPosition();
-            if (food.direction == GameObject.Direction.RIGHT)
-                foodPosition.Y = foodPosition.Y + 5;
-            else if(food.direction == GameObject.Direction.LEFT)
-                foodPosition.Y = foodPosition.Y - 5;
-            else if (food.direction == GameObject.Direction.UP)
+            Position snakePosition = snake[0].GetPosition();
+            if (snake[0].direction == GameObject.Direction.RIGHT)
+                snakePosition.Y = snakePosition.Y + 5;
+            else if(snake[0].direction == GameObject.Direction.LEFT)
+                snakePosition.Y = snakePosition.Y - 5;
+            else if (snake[0].direction == GameObject.Direction.UP)
             {
-                foodPosition.X = foodPosition.X - 5;
+                snakePosition.X = snakePosition.X - 5;
             }
             else
             {
-                foodPosition.X = foodPosition.X + 5;
+                snakePosition.X = snakePosition.X + 5;
             }
-            food.SetPosition(foodPosition);
+            snake[0].SetPosition(snakePosition);
+
+
+
+            if (food.IntersectWith(snake[0]))
+            {
+                int foodpositionX = appleRND.Next(30, 570);
+                int foodpositionY = appleRND.Next(0, 770);
+                Position foodposition = new Position(foodpositionX, foodpositionY);
+                food.SetPosition(foodposition);
+
+
+                snakeVelocity -= 2;
+                board.StopTimer();
+                board.StartTimer(snakeVelocity);
+                if (snakeVelocity < 0)
+                {
+                    snakeVelocity = 0;
+                    board.StopTimer();
+                    board.StartTimer(snakeVelocity);
+                }
+            }
+                
+            
+            
+
            
         }
 
@@ -88,13 +120,19 @@ namespace SnakeGamePlatform
         public void KeyDown(Board board, char key)
         {
             if (key == (char)ConsoleKey.LeftArrow)
-                food.direction = GameObject.Direction.LEFT;
+                snake[0].direction = GameObject.Direction.LEFT;
             if (key == (char)ConsoleKey.RightArrow)
-                food.direction = GameObject.Direction.RIGHT;
+                snake[0].direction = GameObject.Direction.RIGHT;
             if (key == (char)ConsoleKey.DownArrow)
-                food.direction = GameObject.Direction.DOWN;
+                snake[0].direction = GameObject.Direction.DOWN;
             if (key == (char)ConsoleKey.UpArrow)
-                food.direction = GameObject.Direction.UP;
+                snake[0].direction = GameObject.Direction.UP;
         }
+
+        public void ApplePosition()
+        {
+            
+        }
+        
     }
 }
