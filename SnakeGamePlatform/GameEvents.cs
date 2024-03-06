@@ -19,6 +19,7 @@ namespace SnakeGamePlatform
         GameObject[] snake;
         Random appleRND = new Random();
         int snakeVelocity;
+        int snakeSize;
         //This function is called by the game one time on initialization!
         //Here you should define game board resolution and size (x,y).
         //Here you should initialize all variables defined above and create all visual objects on screen.
@@ -26,8 +27,8 @@ namespace SnakeGamePlatform
         //use board Object to add game objects to the game board, play background music, set interval, etc...
         public void GameInit(Board board)
         {
-            snake = new GameObject[1];
-            snakeVelocity = 50;
+            snake = new GameObject[100];
+            snakeVelocity = 200;
 
             //Setup board size and resolution!
             Board.resolutionFactor = 1;
@@ -53,6 +54,13 @@ namespace SnakeGamePlatform
             snake[0].direction = GameObject.Direction.LEFT;
             board.AddGameObject(snake[0]);
 
+            Position snake2Position = new Position(400, 300);
+            snake[1] = new GameObject(snakePosition, 20, 20);
+            snake[1].SetBackgroundColor(Color.Green);
+            snake[1].direction = GameObject.Direction.LEFT;
+            board.AddGameObject(snake[1]);
+
+            snakeSize = 2;
             //Play file in loop!
             board.PlayBackgroundMusic(@"\Images\gameSound.wav");
             //Play file once!
@@ -62,34 +70,22 @@ namespace SnakeGamePlatform
             //Start game timer!
             board.StartTimer(snakeVelocity);
         }
-        
-        
+
+
         //This function is called frequently based on the game board interval that was set when starting the timer!
         //Use this function to move game objects and check collisions
         public void GameClock(Board board)
         {
+            //תזוזה של הנחש
+            MoveSnake();
             
-            
-
-            Position snakePosition = snake[0].GetPosition();
-            if (snake[0].direction == GameObject.Direction.RIGHT)
-                snakePosition.Y = snakePosition.Y + 5;
-            else if(snake[0].direction == GameObject.Direction.LEFT)
-                snakePosition.Y = snakePosition.Y - 5;
-            else if (snake[0].direction == GameObject.Direction.UP)
-            {
-                snakePosition.X = snakePosition.X - 5;
-            }
-            else
-            {
-                snakePosition.X = snakePosition.X + 5;
-            }
-            snake[0].SetPosition(snakePosition);
 
 
 
+            //מיקום התפוח ומהירותו
             if (food.IntersectWith(snake[0]))
             {
+
                 int foodpositionX = appleRND.Next(30, 570);
                 int foodpositionY = appleRND.Next(0, 770);
                 Position foodposition = new Position(foodpositionX, foodpositionY);
@@ -99,18 +95,16 @@ namespace SnakeGamePlatform
                 snakeVelocity -= 2;
                 board.StopTimer();
                 board.StartTimer(snakeVelocity);
-                if (snakeVelocity < 0)
-                {
-                    snakeVelocity = 0;
-                    board.StopTimer();
-                    board.StartTimer(snakeVelocity);
-                }
+                SnakeGetBigger(board);
             }
-                
-            
+
             
 
-           
+
+
+
+
+
         }
 
         //This function is called by the game when the user press a key down on the keyboard.
@@ -127,12 +121,45 @@ namespace SnakeGamePlatform
                 snake[0].direction = GameObject.Direction.DOWN;
             if (key == (char)ConsoleKey.UpArrow)
                 snake[0].direction = GameObject.Direction.UP;
+        
         }
 
-        public void ApplePosition()
+        public void MoveSnake()
         {
             
+            for (int i = snakeSize-1; i > 0; i--)
+            {
+                snake[i].SetPosition(snake[i - 1].GetPosition());
+            }
+            
+            Position snakePosition = snake[0].GetPosition();
+            if (snake[0].direction == GameObject.Direction.RIGHT)
+                snakePosition.Y = snakePosition.Y + 20;
+            else if (snake[0].direction == GameObject.Direction.LEFT)
+                snakePosition.Y = snakePosition.Y - 20;
+            else if (snake[0].direction == GameObject.Direction.UP)
+            {
+                snakePosition.X = snakePosition.X - 20;
+            }
+            else
+            {
+                snakePosition.X = snakePosition.X + 20;
+            }
+            snake[0].SetPosition(snakePosition);
+        }
+
+        public void SnakeGetBigger(Board board)
+        {
+                Position newSnakeObjectPosition = snake[snakeSize-1].GetPosition();
+                MoveSnake();
+                snake[snakeSize] = new GameObject(newSnakeObjectPosition, 20, 20);
+                snake[snakeSize].SetBackgroundColor(Color.Green);
+                board.AddGameObject(snake[snakeSize]);
+                snakeSize++;
+
+
         }
         
+
     }
 }
