@@ -174,6 +174,11 @@ namespace SnakeGamePlatform
             board.Text = title;
         }
 
+        public void RemoveAll()
+        {
+            board.Controls.Clear();
+        }
+
 
     }
 }
