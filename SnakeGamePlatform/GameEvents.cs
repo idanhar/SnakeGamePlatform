@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.Media;
 using WMPLib;
+using System.Diagnostics;
 
 namespace SnakeGamePlatform
 {
@@ -15,13 +16,15 @@ namespace SnakeGamePlatform
         //Define game variables here! for example...
         //GameObject [] snake;
         TextLabel lblScore;
+        TextLabel lblPointsPosition;
         GameObject food;
         GameObject[] snake;
         GameObject[] gvulot; 
         Random appleRND = new Random();
         int snakeVelocity;
         int snakeSize;
-
+        bool isPlaying;
+        int counterPoints;
         //This function is called by the game one time on initialization!
         //Here you should define game board resolution and size (x,y).
         //Here you should initialize all variables defined above and create all visual objects on screen.
@@ -29,36 +32,34 @@ namespace SnakeGamePlatform
         //use board Object to add game objects to the game board, play background music, set interval, etc...
         public void GameInit(Board board)
         {
+            counterPoints = 0;
             snake = new GameObject[100];
             snakeVelocity = 200;
-
+            isPlaying = true;
             //Setup board size and resolution!
             Board.resolutionFactor = 1;
             board.XSize = 600;
             board.YSize = 800;
 
             //Adding a text label to the game board.
-            Position labelPosition = new Position(100, 20);
-            lblScore = new TextLabel("Kuku", labelPosition);
-            lblScore.SetFont("Ariel", 14);
-            board.AddLabel(lblScore);
+            
 
             //Adding Game Object
-            Position foodPosition = new Position(200, 100);
-            food = new GameObject(foodPosition, 20, 20);
-            food.SetImage(Properties.Resources.food);
+            Position foodPosition = new Position(400, 250);
+            food = new GameObject(foodPosition, 30, 30);
+            food.SetImage(Properties.Resources.gargamel);
             food.direction = GameObject.Direction.RIGHT;
             board.AddGameObject(food);
 
-            Position snakePosition = new Position(400, 300);
+            Position snakePosition = new Position(300, 300);
             snake[0] = new GameObject(snakePosition, 20, 20);
-            snake[0].SetBackgroundColor(Color.Green);
+            snake[0].SetImage(Properties.Resources.dr);
             snake[0].direction = GameObject.Direction.LEFT;
             board.AddGameObject(snake[0]);
 
             Position snake2Position = new Position(400, 300);
             snake[1] = new GameObject(snakePosition, 20, 20);
-            snake[1].SetBackgroundColor(Color.Green);
+            snake[1].SetImage(Properties.Resources.dr);
             snake[1].direction = GameObject.Direction.LEFT;
             board.AddGameObject(snake[1]);
 
@@ -86,6 +87,15 @@ namespace SnakeGamePlatform
             gvulot[3].SetBackgroundColor(Color.Black);
             board.AddGameObject(gvulot[3]);
 
+            Position pointsPosition = new Position(100, 60);
+            lblPointsPosition  = new TextLabel("נקודות: ", pointsPosition);
+            lblPointsPosition.SetFont("Ariel", 14);
+            board.AddLabel(lblPointsPosition);
+
+            Position labelPosition = new Position(100, 20);
+            lblScore = new TextLabel("0", labelPosition);
+            lblScore.SetFont("Ariel", 14);
+            board.AddLabel(lblScore);
 
 
             //Play file in loop!
@@ -103,6 +113,9 @@ namespace SnakeGamePlatform
         //Use this function to move game objects and check collisions
         public void GameClock(Board board)
         {
+            
+            
+
             //תזוזה של הנחש
             MoveSnake();
 
@@ -113,18 +126,11 @@ namespace SnakeGamePlatform
             Moveappleandsnakevelocity(board);
 
 
-
+            //בודק עם הנחש יוצא מגבולות המשחק או פוגע בעצמו
             Isoutofboards(board);
 
-
-
-
-
             
             
-
-            
-
         }
 
         //This function is called by the game when the user press a key down on the keyboard.
@@ -142,7 +148,8 @@ namespace SnakeGamePlatform
             if (key == (char)ConsoleKey.UpArrow)
                 snake[0].direction = GameObject.Direction.UP;
 
-            if (key == ' ')
+            
+            if (key == ' ' && !isPlaying)
             {
                 board.RemoveAll();
                 GameInit(board);
@@ -151,6 +158,11 @@ namespace SnakeGamePlatform
         
         }
 
+
+
+        //פעולות עזר
+
+        //הפעולה מזיזה את הנחש
         public void MoveSnake()
         {
             
@@ -175,63 +187,70 @@ namespace SnakeGamePlatform
             snake[0].SetPosition(snakePosition);
         }
 
+        //הפעולה בודקת עם הנחש אוכל תפוח ואם הוא אוכל היא מגדילה אותו
         public void SnakeGetBigger(Board board)
         {
                 Position newSnakeObjectPosition = snake[snakeSize-1].GetPosition();
                 MoveSnake();
                 snake[snakeSize] = new GameObject(newSnakeObjectPosition, 20, 20);
-                snake[snakeSize].SetBackgroundColor(Color.Green);
+                snake[snakeSize].SetImage(Properties.Resources.dr);
                 board.AddGameObject(snake[snakeSize]);
                 snakeSize++;
+
+                counterPoints += 20;
+                lblScore.SetText(counterPoints.ToString());
+            
         }
         public void Isoutofboards(Board board)
         {
             if (snake[0].IntersectWith(gvulot[0]) || snake[0].IntersectWith(gvulot[1]) || snake[0].IntersectWith(gvulot[2]) || snake[0].IntersectWith(gvulot[3]))
             {
-                board.StopTimer();
-                //הצגת הודעה מתאימה
-                Position labelPosition = new Position(400, 300);
-                lblScore = new TextLabel("you lost, loser!! hit spacebar to play again", labelPosition);
-                lblScore.SetFont("Ariel", 14);
-                board.AddLabel(lblScore);
-
-                snakeVelocity = 200;
-                char key = (char)Console.Read();
-                if (key == (char)ConsoleKey.Spacebar)
-                {
-                    board.StartTimer(snakeVelocity);
-                }
+                StopGame(board);
+                return;
             }
 
             for (int i = 1; i < snakeSize - 1; i++)
             {
                 if (snake[0].IntersectWith(snake[i + 1]))
                 {
-                    board.StopTimer();
-                    Position labelPosition = new Position(400, 300);
-                    lblScore = new TextLabel("you lost, loser!! hit spacebar to play again", labelPosition);
-                    lblScore.SetFont("Ariel", 14);
-                    board.AddLabel(lblScore);
+                    StopGame(board);
+                    return;
                 }
             }
         }
 
+        void StopGame(Board board)
+        {
+            board.StopTimer();
+            //הצגת הודעה מתאימה
+            Position labelPosition = new Position(400, 300);
+            lblScore = new TextLabel("you lost, loser!! hit spacebar to play again", labelPosition);
+            lblScore.SetFont("Ariel", 14);
+            board.AddLabel(lblScore);
+            isPlaying = false;
+
+        }
+        //הפעולה משנה את מיקון התפוח ואת המהירות של הנחש
         public void Moveappleandsnakevelocity(Board board)
         {
             if (food.IntersectWith(snake[0]))
             {
 
-                int foodpositionX = appleRND.Next(200, 550);
+                int foodpositionX = appleRND.Next(200, 650);
                 int foodpositionY = appleRND.Next(100, 750);
                 Position foodposition = new Position(foodpositionX, foodpositionY);
                 food.SetPosition(foodposition);
-
-                snakeVelocity -= 2;
+                if (snakeVelocity > 0)
+                {
+                    snakeVelocity -= 3;
+                }
                 board.StopTimer();
                 board.StartTimer(snakeVelocity);
                 SnakeGetBigger(board);
             }
         }
+
+        
 
         
         

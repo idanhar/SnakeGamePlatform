@@ -89,6 +89,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="Images\gar.webp" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -138,8 +139,11 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\dr.png" />
+    <Content Include="Images\gargamel.jpg" />
     <Content Include="Images\kuku.mp3" />
     <Content Include="Images\kuku.wav" />
+    <Content Include="Images\sh.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
