@@ -10,21 +10,22 @@ using System.Diagnostics;
 
 namespace SnakeGamePlatform
 {
-    
-    public class GameEvents:IGameEvents
+    public class GameEvents : IGameEvents
     {
         //Define game variables here! for example...
         //GameObject [] snake;
-        TextLabel lblScore;
-        TextLabel lblPointsPosition;
-        GameObject food;
-        GameObject[] snake;
-        GameObject[] gvulot; 
-        Random appleRND = new Random();
-        int snakeVelocity;
-        int snakeSize;
-        bool isPlaying;
-        int counterPoints;
+        TextLabel LblScore;
+        TextLabel LblMaxScore;
+        TextLabel LblMaxScorePosition;
+        TextLabel LblPointsPosition;
+        GameObject Food;
+        GameObject[] Snake;
+        GameObject[] Gvulot;
+        Random AppleRND = new Random();
+        int SnakeVelocity;
+        int SnakeSize;
+        bool IsPlaying;
+        int CounterPoints;
         //This function is called by the game one time on initialization!
         //Here you should define game board resolution and size (x,y).
         //Here you should initialize all variables defined above and create all visual objects on screen.
@@ -32,71 +33,57 @@ namespace SnakeGamePlatform
         //use board Object to add game objects to the game board, play background music, set interval, etc...
         public void GameInit(Board board)
         {
-            counterPoints = 0;
-            snake = new GameObject[100];
-            snakeVelocity = 200;
-            isPlaying = true;
+            CounterPoints = 0;
+            Snake = new GameObject[100];
+            SnakeVelocity = 200;
+            IsPlaying = true;
+
             //Setup board size and resolution!
             Board.resolutionFactor = 1;
             board.XSize = 600;
             board.YSize = 800;
 
             //Adding a text label to the game board.
-            
+
 
             //Adding Game Object
-            Position foodPosition = new Position(400, 250);
-            food = new GameObject(foodPosition, 30, 30);
-            food.SetImage(Properties.Resources.gargamel);
-            food.direction = GameObject.Direction.RIGHT;
-            board.AddGameObject(food);
 
-            Position snakePosition = new Position(300, 300);
-            snake[0] = new GameObject(snakePosition, 20, 20);
-            snake[0].SetImage(Properties.Resources.dr);
-            snake[0].direction = GameObject.Direction.LEFT;
-            board.AddGameObject(snake[0]);
+            board.SetBackgroundImage(Properties.Resources.yaar1);
 
-            Position snake2Position = new Position(400, 300);
-            snake[1] = new GameObject(snakePosition, 20, 20);
-            snake[1].SetImage(Properties.Resources.dr);
-            snake[1].direction = GameObject.Direction.LEFT;
-            board.AddGameObject(snake[1]);
 
-            snakeSize = 2;
+            Position foodPosition = new Position(400, 750);
+            Food = new GameObject(foodPosition, 30, 30);
+            Food.SetImage(Properties.Resources.dr);
+            Food.direction = GameObject.Direction.RIGHT;
+            board.AddGameObject(Food);
 
-            gvulot = new GameObject[4];
+            Position snakePosition = new Position(300, 800);
+            Snake[0] = new GameObject(snakePosition, 30, 30);
+            Snake[0].SetImage(Properties.Resources.garg);
+            Snake[0].direction = GameObject.Direction.LEFT;
+            board.AddGameObject(Snake[0]);
 
-            Position boarddown = new Position(775, 0);
-            gvulot[0] = new GameObject(boarddown, 800, 25);
-            gvulot[0].SetBackgroundColor(Color.Black);
-            board.AddGameObject(gvulot[0]);
+            Position snake2Position = new Position(400, 800);
+            Snake[1] = new GameObject(snakePosition, 30, 30);
+            Snake[1].SetImage(Properties.Resources.garg);
+            Snake[1].direction = GameObject.Direction.LEFT;
+            board.AddGameObject(Snake[1]);
 
-            Position boardup = new Position(175, 0);
-            gvulot[1] = new GameObject(boardup, 800, 25);
-            gvulot[1].SetBackgroundColor(Color.Black);
-            board.AddGameObject(gvulot[1]);
+            SnakeSize = 2;
 
-            Position boardright = new Position(200, 775);
-            gvulot[2] = new GameObject(boardright, 25, 600);
-            gvulot[2].SetBackgroundColor(Color.Black);
-            board.AddGameObject(gvulot[2]);
+            gvulut(board);
 
-            Position boardleft = new Position(200, 0);
-            gvulot[3] = new GameObject(boardleft, 25, 600);
-            gvulot[3].SetBackgroundColor(Color.Black);
-            board.AddGameObject(gvulot[3]);
+            Position pointsPosition = new Position(100, 560);
+            LblPointsPosition = new TextLabel("points:", pointsPosition);
+            LblPointsPosition.SetFont("Ariel", 14);
+            board.AddLabel(LblPointsPosition);
 
-            Position pointsPosition = new Position(100, 60);
-            lblPointsPosition  = new TextLabel("נקודות: ", pointsPosition);
-            lblPointsPosition.SetFont("Ariel", 14);
-            board.AddLabel(lblPointsPosition);
+            Position labelPosition = new Position(100, 620);
+            LblScore = new TextLabel("0", labelPosition);
+            LblScore.SetFont("Ariel", 14);
+            board.AddLabel(LblScore);
 
-            Position labelPosition = new Position(100, 20);
-            lblScore = new TextLabel("0", labelPosition);
-            lblScore.SetFont("Ariel", 14);
-            board.AddLabel(lblScore);
-
+            
 
             //Play file in loop!
             board.PlayBackgroundMusic(@"\Images\gameSound.wav");
@@ -105,7 +92,8 @@ namespace SnakeGamePlatform
 
 
             //Start game timer!
-            board.StartTimer(snakeVelocity);
+            board.StartTimer(SnakeVelocity);
+
         }
 
 
@@ -113,8 +101,8 @@ namespace SnakeGamePlatform
         //Use this function to move game objects and check collisions
         public void GameClock(Board board)
         {
-            
-            
+
+
 
             //תזוזה של הנחש
             MoveSnake();
@@ -129,8 +117,8 @@ namespace SnakeGamePlatform
             //בודק עם הנחש יוצא מגבולות המשחק או פוגע בעצמו
             Isoutofboards(board);
 
-            
-            
+
+
         }
 
         //This function is called by the game when the user press a key down on the keyboard.
@@ -139,24 +127,23 @@ namespace SnakeGamePlatform
         //Also use this function to handle game pause, showing user messages (like victory) and so on...
         public void KeyDown(Board board, char key)
         {
-            if (key == (char)ConsoleKey.LeftArrow)
-                snake[0].direction = GameObject.Direction.LEFT;
-            if (key == (char)ConsoleKey.RightArrow)
-                snake[0].direction = GameObject.Direction.RIGHT;
-            if (key == (char)ConsoleKey.DownArrow)
-                snake[0].direction = GameObject.Direction.DOWN;
-            if (key == (char)ConsoleKey.UpArrow)
-                snake[0].direction = GameObject.Direction.UP;
+            if (key == (char)ConsoleKey.LeftArrow && Snake[0].direction != GameObject.Direction.RIGHT)
+                Snake[0].direction = GameObject.Direction.LEFT;
+            if (key == (char)ConsoleKey.RightArrow && Snake[0].direction != GameObject.Direction.LEFT)
+                Snake[0].direction = GameObject.Direction.RIGHT;
+            if (key == (char)ConsoleKey.DownArrow && Snake[0].direction != GameObject.Direction.UP)
+                Snake[0].direction = GameObject.Direction.DOWN;
+            if (key == (char)ConsoleKey.UpArrow && Snake[0].direction != GameObject.Direction.DOWN)
+                Snake[0].direction = GameObject.Direction.UP;
 
-            
-            if (key == ' ' && !isPlaying)
-            {
-                board.RemoveAll();
-                GameInit(board);
-            }
-                
-        
+            // אם המשתמש לוחץ על מקש הרווח כאשר הוא נפסל, המשחק מתחיל מחדש
+            StartAgain(board, key);
+
+
         }
+
+
+
 
 
 
@@ -165,95 +152,140 @@ namespace SnakeGamePlatform
         //הפעולה מזיזה את הנחש
         public void MoveSnake()
         {
-            
-            for (int i = snakeSize-1; i > 0; i--)
+
+            for (int i = SnakeSize - 1; i > 0; i--)
             {
-                snake[i].SetPosition(snake[i - 1].GetPosition());
+                Snake[i].SetPosition(Snake[i - 1].GetPosition());
             }
-            
-            Position snakePosition = snake[0].GetPosition();
-            if (snake[0].direction == GameObject.Direction.RIGHT)
-                snakePosition.Y = snakePosition.Y + 20;
-            else if (snake[0].direction == GameObject.Direction.LEFT)
-                snakePosition.Y = snakePosition.Y - 20;
-            else if (snake[0].direction == GameObject.Direction.UP)
+
+            Position snakePosition = Snake[0].GetPosition();
+            if (Snake[0].direction == GameObject.Direction.RIGHT)
+                snakePosition.Y = snakePosition.Y + 30;
+            else if (Snake[0].direction == GameObject.Direction.LEFT)
+                snakePosition.Y = snakePosition.Y - 30;
+            else if (Snake[0].direction == GameObject.Direction.UP)
             {
-                snakePosition.X = snakePosition.X - 20;
+                snakePosition.X = snakePosition.X - 30;
             }
             else
             {
-                snakePosition.X = snakePosition.X + 20;
+                snakePosition.X = snakePosition.X + 30;
             }
-            snake[0].SetPosition(snakePosition);
+            Snake[0].SetPosition(snakePosition);
         }
 
         //הפעולה בודקת עם הנחש אוכל תפוח ואם הוא אוכל היא מגדילה אותו
         public void SnakeGetBigger(Board board)
         {
-                Position newSnakeObjectPosition = snake[snakeSize-1].GetPosition();
-                MoveSnake();
-                snake[snakeSize] = new GameObject(newSnakeObjectPosition, 20, 20);
-                snake[snakeSize].SetImage(Properties.Resources.dr);
-                board.AddGameObject(snake[snakeSize]);
-                snakeSize++;
+            Position newSnakeObjectPosition = Snake[SnakeSize - 1].GetPosition();
+            MoveSnake();
+            Snake[SnakeSize] = new GameObject(newSnakeObjectPosition, 30, 30);
+            Snake[SnakeSize].SetImage(Properties.Resources.garg);
+            board.AddGameObject(Snake[SnakeSize]);
+            SnakeSize++;
 
-                counterPoints += 20;
-                lblScore.SetText(counterPoints.ToString());
-            
+            CounterPoints += 20;
+            LblScore.SetText(CounterPoints.ToString());
+
         }
+        // הפעולה בודקת אם הנחש יצא מהגבולות
         public void Isoutofboards(Board board)
         {
-            if (snake[0].IntersectWith(gvulot[0]) || snake[0].IntersectWith(gvulot[1]) || snake[0].IntersectWith(gvulot[2]) || snake[0].IntersectWith(gvulot[3]))
+            if (Snake[0].IntersectWith(Gvulot[0]) || Snake[0].IntersectWith(Gvulot[1]) || Snake[0].IntersectWith(Gvulot[2]) || Snake[0].IntersectWith(Gvulot[3]))
             {
                 StopGame(board);
-                return;
+                if (CounterPoints > CounterMaxPoints)
+                {
+                    CounterMaxPoints = CounterPoints;
+                    LblMaxScore.SetText(CounterMaxPoints.ToString());
+                }
             }
 
-            for (int i = 1; i < snakeSize - 1; i++)
+            for (int i = 1; i < SnakeSize - 1; i++)
             {
-                if (snake[0].IntersectWith(snake[i + 1]))
+                if (Snake[0].IntersectWith(Snake[i + 1]))
                 {
                     StopGame(board);
-                    return;
+                    if (CounterPoints > CounterMaxPoints)
+                    {
+                        CounterMaxPoints = CounterPoints;
+                        LblMaxScore.SetText(CounterMaxPoints.ToString());
+                    }
                 }
             }
         }
 
-        void StopGame(Board board)
+        public void StopGame(Board board)
         {
             board.StopTimer();
             //הצגת הודעה מתאימה
-            Position labelPosition = new Position(400, 300);
-            lblScore = new TextLabel("you lost, loser!! hit spacebar to play again", labelPosition);
-            lblScore.SetFont("Ariel", 14);
-            board.AddLabel(lblScore);
-            isPlaying = false;
+            Position labelPosition = new Position(400, 800);
+            LblScore = new TextLabel("you lost, loser!! hit spacebar to play again", labelPosition);
+            LblScore.SetFont("Ariel", 14);
+            board.AddLabel(LblScore);
+            IsPlaying = false;
 
         }
         //הפעולה משנה את מיקון התפוח ואת המהירות של הנחש
         public void Moveappleandsnakevelocity(Board board)
         {
-            if (food.IntersectWith(snake[0]))
+            if (Food.IntersectWith(Snake[0]))
             {
 
-                int foodpositionX = appleRND.Next(200, 650);
-                int foodpositionY = appleRND.Next(100, 750);
+                int foodpositionX = AppleRND.Next(200, 650);
+                int foodpositionY = AppleRND.Next(600, 1200);
                 Position foodposition = new Position(foodpositionX, foodpositionY);
-                food.SetPosition(foodposition);
-                if (snakeVelocity > 0)
+                Food.SetPosition(foodposition);
+                if (SnakeVelocity > 0)
                 {
-                    snakeVelocity -= 3;
+                    SnakeVelocity -= 3;
                 }
                 board.StopTimer();
-                board.StartTimer(snakeVelocity);
+                board.StartTimer(SnakeVelocity);
                 SnakeGetBigger(board);
             }
         }
+        //הפעולה מתחילה את המשחק מחדש
+        public void StartAgain(Board board, char key)
+        {
+            if (key == ' ' && !IsPlaying)
+            {
+                board.RemoveAll();
+                GameInit(board);
+            }
+        }
+        //הפעולה יוצרת את גבולות המשחק
+        public void gvulut(Board board)
+        {
+            Gvulot = new GameObject[4];
 
-        
+            Position boarddown = new Position(775, 500);
+            Gvulot[0] = new GameObject(boarddown, 800, 25);
+            Gvulot[0].SetBackgroundColor(Color.Black);
+            board.AddGameObject(Gvulot[0]);
 
-        
-        
+            Position boardup = new Position(175, 500);
+            Gvulot[1] = new GameObject(boardup, 800, 25);
+            Gvulot[1].SetBackgroundColor(Color.Black);
+            board.AddGameObject(Gvulot[1]);
 
+            Position boardright = new Position(200, 1275);
+            Gvulot[2] = new GameObject(boardright, 25, 600);
+            Gvulot[2].SetBackgroundColor(Color.Black);
+            board.AddGameObject(Gvulot[2]);
+
+            Position boardleft = new Position(200, 500);
+            Gvulot[3] = new GameObject(boardleft, 25, 600);
+            Gvulot[3].SetBackgroundColor(Color.Black);
+            board.AddGameObject(Gvulot[3]);
+
+
+
+
+        }
     }
 }
+
+
+
+

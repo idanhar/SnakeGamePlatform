@@ -92,6 +92,16 @@ namespace SnakeGamePlatform.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap garg {
+            get {
+                object obj = ResourceManager.GetObject("garg", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap gargamel {
             get {
                 object obj = ResourceManager.GetObject("gargamel", resourceCulture);
@@ -105,6 +115,16 @@ namespace SnakeGamePlatform.Properties {
         internal static System.Drawing.Bitmap sh {
             get {
                 object obj = ResourceManager.GetObject("sh", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap yaar1 {
+            get {
+                object obj = ResourceManager.GetObject("yaar1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
